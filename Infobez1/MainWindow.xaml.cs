@@ -111,11 +111,11 @@ namespace Infobez1
             } */
 
 
-            for (int i = 1; i < word.Length; i++)
+            for (int i = 0; i < word.Length; i++)
             {
                 if (IsEN == true)
                 {
-                    for (int j = 0; j <= EN.Length; j++)
+                    for (int j = 0; j < EN.Length; j++)
                     {
                         if (word[i] == EN[j])
                         {
@@ -125,7 +125,7 @@ namespace Infobez1
                 }
                 if (IsRU == true)
                 {
-                    for (int j = 0; j <= RU.Length; j++)
+                    for (int j = 0; j < RU.Length; j++)
                     {
                         if (word[i] == RU[j])
                         {
@@ -153,14 +153,14 @@ namespace Infobez1
 
         private void RU_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("RU");
+            //MessageBox.Show("RU");
             IsRU = true;
             IsEN = false;
         }
 
         private void EN_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("EN");
+            //MessageBox.Show("EN");
             IsEN = true;
             IsRU = false;
         }
