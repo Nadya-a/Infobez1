@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,62 +48,94 @@ namespace Infobez1
                 cm.IsOpen = true;
                 cm.StaysOpen = false;
             }
-            else
+            if (check == true)
             {
-                
-                int key = Convert.ToInt32(Key.Text);
 
-                char[] chipher = Message.Text.ToCharArray();
-                char[] b = chipher.ToArray();
+                // int key = Convert.ToInt32(Key.Text);
 
-                Cipher.Text = Chipher();
-
-
-
-
-
-
-
+                //char[] chipher = Message.Text.ToCharArray();
+                //char[] b = chipher.ToArray();
+                var chipher = new List<string>();
+                chipher = Chipher();
+                string combinedString = string.Join(" ", chipher);
+                Cipher.Text = combinedString;
             }
         }
 
-        private string Chipher()
+        private List<string> Chipher()
         {
-            char[] message = Message.Text.ToCharArray();
+            var chipher = new List<string>();
+            //char[] chipher = new char[Message.Text.Length];
+            //int position = 0;
             int key = Convert.ToInt32(Key.Text);
-            char[] chipher = new char[Message.Text.Length];
-
-            if (message.Length>EN.Length)
-
-
-            for (int i = 1; i < Message.Text.Length; i++)
+            string[] words = Message.Text.Split(' ');
+            for (int n=0;n<words.Length;n++)
             {
+                char[] word = words[n].ToCharArray();
+                string chip = new string(Words_chipher(word, key));
+                chipher.Add(chip);
+                //chipher.Add(" ");
+            }
 
+
+
+
+            //char[] message = Message.Text.ToCharArray();
+            //int key = Convert.ToInt32(Key.Text);
+            //char[] chipher = new char[Message.Text.Length];
+
+            //if (message.Length>EN.Length)
+
+
+            
+            //string result = new string(chipher);
+            return chipher;
+        }
+
+        private char[] Words_chipher(char[] word, int key)
+        {
+            char[] chipher = new char[word.Length];
+
+          /*  foreach(char n in word)
+            {
                 if (IsEN == true)
                 {
-                        for (int j = 0; j < EN.Length; j++)
-                        {
-                            if (message[i] == EN[j])
-                            {
-                                chipher[i] = EN[j + key];
-                            }
-                        }
-                }
-                if (IsRU==true)
+                    for (int j = 0; j <= EN.Length; j++)
                     {
-                        for (int j = 0; j < RU.Length; j++)
+                        if (n == EN[j])
                         {
-                            if (message[i] == RU[j])
-                            {
-                                chipher[i] = RU[j + key];
-                            }
+                            chipher[i] = EN[j + key];
                         }
                     }
+                }
+            } */
 
 
+            for (int i = 1; i < word.Length; i++)
+            {
+                if (IsEN == true)
+                {
+                    for (int j = 0; j <= EN.Length; j++)
+                    {
+                        if (word[i] == EN[j])
+                        {
+                            chipher[i] = EN[j + key];
+                        }
+                    }
+                }
+                if (IsRU == true)
+                {
+                    for (int j = 0; j <= RU.Length; j++)
+                    {
+                        if (word[i] == RU[j])
+                        {
+                            chipher[i] = RU[j + key];
+                        }
+                    }
+                }
             }
-            string result = new string(chipher);
-            return result;
+
+            return chipher;
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -162,5 +194,7 @@ namespace Infobez1
                 //return Language.Unknown;
             }
         }
+
+       
     }
 }
