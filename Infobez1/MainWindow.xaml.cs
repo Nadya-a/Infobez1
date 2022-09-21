@@ -34,6 +34,85 @@ namespace Infobez1
         private void Decipher_Click(object sender, RoutedEventArgs e)
         {
 
+            var chipher = new List<string>();
+            chipher = Dechipher();
+            string combinedString = string.Join(" ", chipher);
+            Decipher.Text = combinedString;
+
+            /*bool check = Language_Check(Message.Text);
+
+            //почему открывается только один раз??????????????!!
+            if (check == false)
+            {
+                ToolTip cm = this.FindResource("toolTrip") as ToolTip;
+                cm.PlacementTarget = Message;
+                cm.IsOpen = true;
+                cm.StaysOpen = false;
+            }
+            if (check == true)
+            {
+                var chipher = new List<string>();
+                chipher = Chipher();
+                string combinedString = string.Join(" ", chipher);
+                Cipher.Text = combinedString;
+            }*/
+        }
+
+        private List<string> Dechipher()
+        {
+            var chipher = new List<string>();
+            int key = Convert.ToInt32(Key.Text);
+            string[] words = Decipher.Text.Split(' ');
+            for (int n = 0; n < words.Length; n++)
+            {
+                char[] word = words[n].ToCharArray();
+                string chip = new string(Words_dechipher(word, key));
+                chipher.Add(chip);
+            }
+            return chipher;
+        }
+
+        private char[] Words_dechipher(char[] word, int key)
+        {
+            char[] chipher = new char[word.Length];
+
+            for (int i = 0; i < word.Length; i++)
+            {
+                if (IsEN == true)
+                {
+                    for (int j = 0; j < EN.Length; j++)
+                    {
+                        if (word[i] == EN[j])
+                        {
+                            if ((j - key) < 0)
+                            {
+                                int difference = EN.Length-key;
+                                chipher[i] = EN[difference];
+
+                            }
+                            else chipher[i] = EN[j - key];
+                        }
+                    }
+                }
+                if (IsRU == true)
+                {
+                    for (int j = 0; j < RU.Length; j++)
+                    {
+                        if (word[i] == RU[j])
+                        {
+                            if ((j + key) > RU.Length)
+                            {
+                                int difference = (j + key) - RU.Length;
+                                chipher[i] = RU[difference];
+
+                            }
+                            else chipher[i] = RU[j + key];
+                        }
+                    }
+                }
+            }
+
+            return chipher;
         }
 
         private void Cipher_Click(object sender, RoutedEventArgs e)
@@ -96,21 +175,6 @@ namespace Infobez1
         {
             char[] chipher = new char[word.Length];
 
-          /*  foreach(char n in word)
-            {
-                if (IsEN == true)
-                {
-                    for (int j = 0; j <= EN.Length; j++)
-                    {
-                        if (n == EN[j])
-                        {
-                            chipher[i] = EN[j + key];
-                        }
-                    }
-                }
-            } */
-
-
             for (int i = 0; i < word.Length; i++)
             {
                 if (IsEN == true)
@@ -119,7 +183,13 @@ namespace Infobez1
                     {
                         if (word[i] == EN[j])
                         {
-                            chipher[i] = EN[j + key];
+                            if ((j + key)>EN.Length)
+                            {
+                                int difference = (j + key) - EN.Length;
+                                chipher[i] = EN[difference];
+
+                            }
+                            else chipher[i] = EN[j + key];
                         }
                     }
                 }
@@ -129,7 +199,13 @@ namespace Infobez1
                     {
                         if (word[i] == RU[j])
                         {
-                            chipher[i] = RU[j + key];
+                            if ((j + key) > RU.Length)
+                            {
+                                int difference = (j + key) - RU.Length;
+                                chipher[i] = RU[difference];
+
+                            }
+                            else chipher[i] = RU[j + key];
                         }
                     }
                 }
