@@ -20,8 +20,8 @@ namespace Infobez1
     /// </summary>
     public partial class MainWindow : Window
     {
-        char[] EN = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        char[] RU = { 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        char[] EN = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0' ,'1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        char[] RU = { 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         bool IsRU = false; bool IsEN = false;
 
@@ -34,10 +34,10 @@ namespace Infobez1
         private void Decipher_Click(object sender, RoutedEventArgs e)
         {
 
-            var chipher = new List<string>();
-            chipher = Dechipher();
-            string combinedString = string.Join(" ", chipher);
-            Decipher.Text = combinedString;
+            var dechipher = new List<string>();
+            dechipher = Dechipher();
+            string combinedString = string.Join(" ", dechipher);
+            Dechipherr.Text = combinedString;
 
             /*bool check = Language_Check(Message.Text);
 
@@ -60,55 +60,106 @@ namespace Infobez1
 
         private List<string> Dechipher()
         {
-            var chipher = new List<string>();
+            var dechipher = new List<string>();
             int key = Convert.ToInt32(Key.Text);
-            string[] words = Decipher.Text.Split(' ');
+            //bool b = Key.Text.Contains("-");
+            //if (b) key = key * (-1);
+            //int key = Convert.ToInt32(Key.Text);
+            /* foreach (char s in Key.Text)
+             {
+                 if (s is "-")
+
+             } */
+            string[] words = Cipher.Text.Split(' ');
+                //Decipher.Text.Split(' ');
             for (int n = 0; n < words.Length; n++)
             {
                 char[] word = words[n].ToCharArray();
                 string chip = new string(Words_dechipher(word, key));
-                chipher.Add(chip);
+                dechipher.Add(chip);
             }
-            return chipher;
+            return dechipher;
         }
 
         private char[] Words_dechipher(char[] word, int key)
         {
             char[] chipher = new char[word.Length];
-
-            for (int i = 0; i < word.Length; i++)
+            if (key > 0)
             {
-                if (IsEN == true)
+                for (int i = 0; i < word.Length; i++)
                 {
-                    for (int j = 0; j < EN.Length; j++)
+                    if (IsEN == true)
                     {
-                        if (word[i] == EN[j])
+                        for (int j = 0; j < EN.Length; j++)
                         {
-                            if ((j - key) < 0)
+                            if (word[i] == EN[j])
                             {
-                                int difference = EN.Length-key;
-                                chipher[i] = EN[difference];
+                                if ((j - key) < 0)
+                                {
+                                    int difference = EN.Length - key;
+                                    chipher[i] = EN[difference];
 
+                                }
+                                else chipher[i] = EN[j - key];
                             }
-                            else chipher[i] = EN[j - key];
+                        }
+                    }
+                    if (IsRU == true)
+                    {
+                        for (int j = 0; j < RU.Length; j++)
+                        {
+                            if (word[i] == RU[j])
+                            {
+                                if ((j + key) > RU.Length)
+                                {
+                                    int difference = RU.Length - (j + key);
+                                    chipher[i] = RU[difference];
+
+                                }
+                                else chipher[i] = RU[j - key];
+                            }
                         }
                     }
                 }
-                if (IsRU == true)
+            }
+            if (key < 0)
+            {
+                key = key * (-1);
+                for (int i = 0; i < word.Length; i++)
                 {
-                    for (int j = 0; j < RU.Length; j++)
+                    if (IsEN == true)
                     {
-                        if (word[i] == RU[j])
+                        for (int j = 0; j < EN.Length; j++)
                         {
-                            if ((j + key) > RU.Length)
+                            if (word[i] == EN[j])
                             {
-                                int difference = (j + key) - RU.Length;
-                                chipher[i] = RU[difference];
+                                if ((j + key) >= EN.Length)
+                                {
+                                    int difference = (j + key) - EN.Length;
+                                    chipher[i] = EN[difference];
 
+                                }
+                                else chipher[i] = EN[j + key];
                             }
-                            else chipher[i] = RU[j + key];
                         }
                     }
+                    if (IsRU == true)
+                    {
+                        for (int j = 0; j < RU.Length; j++)
+                        {
+                            if (word[i] == RU[j])
+                            {
+                                if ((j + key) >= RU.Length)
+                                {
+                                    int difference = (j + key) - RU.Length;
+                                    chipher[i] = RU[difference];
+
+                                }
+                                else chipher[i] = RU[j + key];
+                            }
+                        }
+                    }
+
                 }
             }
 
@@ -175,37 +226,81 @@ namespace Infobez1
         {
             char[] chipher = new char[word.Length];
 
-            for (int i = 0; i < word.Length; i++)
+            if (key > 0)
             {
-                if (IsEN == true)
-                {
-                    for (int j = 0; j < EN.Length; j++)
-                    {
-                        if (word[i] == EN[j])
-                        {
-                            if ((j + key)>EN.Length)
-                            {
-                                int difference = (j + key) - EN.Length;
-                                chipher[i] = EN[difference];
 
+                for (int i = 0; i < word.Length; i++)
+                {
+                    if (IsEN == true)
+                    {
+                        for (int j = 0; j < EN.Length; j++)
+                        {
+                            if (word[i] == EN[j])
+                            {
+                                if ((j + key) > EN.Length)
+                                {
+                                    int difference = (j + key) - EN.Length;
+                                    chipher[i] = EN[difference];
+
+                                }
+                                else chipher[i] = EN[j + key];
                             }
-                            else chipher[i] = EN[j + key];
+                        }
+                    }
+                    if (IsRU == true)
+                    {
+                        for (int j = 0; j < RU.Length; j++)
+                        {
+                            if (word[i] == RU[j])
+                            {
+                                if ((j + key) > RU.Length)
+                                {
+                                    int difference = (j + key) - RU.Length;
+                                    chipher[i] = RU[difference];
+
+                                }
+                                else chipher[i] = RU[j + key];
+                            }
                         }
                     }
                 }
-                if (IsRU == true)
-                {
-                    for (int j = 0; j < RU.Length; j++)
-                    {
-                        if (word[i] == RU[j])
-                        {
-                            if ((j + key) > RU.Length)
-                            {
-                                int difference = (j + key) - RU.Length;
-                                chipher[i] = RU[difference];
+            }
 
+            if (key<0)
+            {
+                key = key * (-1);
+                for (int i = 0; i < word.Length; i++)
+                {
+                    if (IsEN == true)
+                    {
+                        for (int j = 0; j < EN.Length; j++)
+                        {
+                            if (word[i] == EN[j])
+                            {
+                                if ((j - key) < 0)
+                                {
+                                    int difference = EN.Length - (key + j);
+                                    chipher[i] = EN[difference];
+
+                                }
+                                else chipher[i] = EN[j - key];
                             }
-                            else chipher[i] = RU[j + key];
+                        }
+                    }
+                    if (IsRU == true)
+                    {
+                        for (int j = 0; j < RU.Length; j++)
+                        {
+                            if (word[i] == RU[j])
+                            {
+                                if ((j - key) < RU.Length)
+                                {
+                                    int difference = RU.Length - (j + key);
+                                    chipher[i] = RU[difference];
+
+                                }
+                                else chipher[i] = RU[j - key];
+                            }
                         }
                     }
                 }
@@ -271,6 +366,12 @@ namespace Infobez1
             }
         }
 
-       
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            Message.Text = "";
+            Cipher.Text = "";
+            Dechipherr.Text = "";
+            Key.Text = "";
+        }
     }
 }
