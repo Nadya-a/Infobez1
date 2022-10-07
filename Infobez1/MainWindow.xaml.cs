@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace Infobez1
 {
@@ -35,12 +36,21 @@ namespace Infobez1
         private void Decipher_Click(object sender, RoutedEventArgs e)
         {
             bool check = Language_Check(Message.Text);
-            if (check)
+            bool check1 = Regex.IsMatch(Key.Text, @"^[0-9]+$");
+            if (!check1)
             {
-                var dechipher = new List<string>();
-                dechipher = Dechipher();
-                string combinedString = string.Join(" ", dechipher);
-                Dechipherr.Text = combinedString;
+                MessageBox.Show("Ключ не может содержать буквы!");
+                Key.Text = "";
+            }
+            else
+            {
+                if (check)
+                {
+                    var dechipher = new List<string>();
+                    dechipher = Dechipher();
+                    string combinedString = string.Join(" ", dechipher);
+                    Dechipherr.Text = combinedString;
+                }
             }
         }
 
@@ -85,21 +95,29 @@ namespace Infobez1
         private void Cipher_Click(object sender, RoutedEventArgs e)
         {
             bool check = Language_Check(Message.Text);
-
-            //почему открывается только один раз??????????????!!
-            if (check == false)
+            bool check1 = Regex.IsMatch(Key.Text, @"^[0-9]+$");
+            if (!check1)
             {
-                ToolTip cm = this.FindResource("toolTrip") as ToolTip;
-                cm.PlacementTarget = Message;
-                cm.IsOpen = true;
-                cm.StaysOpen = false;
+                MessageBox.Show("Ключ не может содержать буквы!");
+                Key.Text = "";
             }
-            if (check == true)
+            else
             {
-                var chipher = new List<string>();
-                chipher = Chipher();
-                string combinedString = string.Join(" ", chipher);
-                Cipher.Text = combinedString;
+                //почему открывается только один раз??????????????!!
+                if (check == false)
+                {
+                    ToolTip cm = this.FindResource("toolTrip") as ToolTip;
+                    cm.PlacementTarget = Message;
+                    cm.IsOpen = true;
+                    cm.StaysOpen = false;
+                }
+                if (check == true)
+                {
+                    var chipher = new List<string>();
+                    chipher = Chipher();
+                    string combinedString = string.Join(" ", chipher);
+                    Cipher.Text = combinedString;
+                }
             }
         }
 
@@ -114,7 +132,7 @@ namespace Infobez1
                 key = key * (-1);
             }
             else key = Calculate_key(key);
-            MessageBox.Show("key == " + key);
+            //MessageBox.Show("key == " + key);
             string[] words = Message.Text.Split(' ');
             for (int n = 0; n < words.Length; n++)
             {
@@ -199,6 +217,35 @@ namespace Infobez1
             }
         }
 
+        /* private bool Key_Check(string str)
+         {
+             Regex.IsMatch(str, @"^[a-zA-Z0-9]+$");
+             /* if (String.IsNullOrEmpty(str))
+              {
+                  MessageBox.Show("Empty key!!");
+                  return false;
+              }
+              else
+              {
+                  str.ToLower();
+
+                  byte[] b = System.Text.Encoding.Default.GetBytes(str);
+                  int letters_count = 0;
+
+                  foreach (byte bt in b)
+                  {
+                      if ((bt >= 97) && (bt <= 122)) letters_count++;
+                      if ((bt >= 192) && (bt <= 239)) letters_count++;
+                  }
+
+                  if (letters_count > 0) return true;
+
+                  else return false;
+                  // if (angl_count < rus_count) return Language.Russian;
+                  //return Language.Unknown;
+              } }*/
+
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             Message.Text = "";
@@ -221,7 +268,7 @@ namespace Infobez1
 
                         k = key / EN.Length;
                         key = key - (EN.Length * k);
-                        MessageBox.Show("key == " + key);
+                        //MessageBox.Show("key == " + key);
 
                     }
                 }
@@ -232,7 +279,7 @@ namespace Infobez1
 
                         k = key / RU.Length;
                         key = key - (RU.Length * k);
-                        MessageBox.Show("key == " + key);
+                        //MessageBox.Show("key == " + key);
                     }
                 }
 
@@ -243,7 +290,7 @@ namespace Infobez1
                     {
                         k = key / EN.Length;
                         key = key - (EN.Length * k);
-                        MessageBox.Show("key == " + key);
+                        //MessageBox.Show("key == " + key);
 
                     }
                 }
@@ -254,7 +301,7 @@ namespace Infobez1
 
                         k = key / RU.Length;
                         key = key - (RU.Length * k);
-                        MessageBox.Show("key == " + key);
+                        //MessageBox.Show("key == " + key);
                     }
                 }
             }
@@ -318,10 +365,17 @@ namespace Infobez1
                     {
                         if (word[i] == EN[j])
                         {
+                            //abcdefghijklmnopqrstuvwxyz0123456789
+                            //fghijklmnopqrstuvwxyz0123456789abcde
+                            //abcdefghijklmnopqrstuvwxyz0123454321
                             if ((j - key) < 0)
                             {
-                                int difference = EN.Length - (key + j);
-                               
+                                int difference = EN.Length - (key - j);
+                                if (difference < 0)
+                                {
+                                    difference = j + key - EN.Length;
+                                    difference = EN.Length - difference;
+                                }
                                 chipher[i] = EN[difference];
 
                             }
@@ -335,9 +389,14 @@ namespace Infobez1
                     {
                         if (word[i] == RU[j])
                         {
-                            if ((j - key) < RU.Length)
+                            if ((j - key) < 0)
                             {
-                                int difference = RU.Length - (j + key);
+                                int difference = RU.Length - (key - j);
+                                if (difference<0)
+                                {
+                                    difference = j + key - RU.Length;
+                                    difference = RU.Length - difference;
+                                }
                                 chipher[i] = RU[difference];
 
                             }
