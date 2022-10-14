@@ -22,8 +22,8 @@ namespace Infobez1
     /// </summary>
     public partial class MainWindow : Window
     {
-        char[] EN = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        char[] RU = { 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        char[] EN = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        char[] RU = { 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 
         bool IsRU = false; bool IsEN = false;
 
@@ -37,14 +37,22 @@ namespace Infobez1
         {
             bool check = Language_Check(Message.Text);
             bool check1 = Regex.IsMatch(Key.Text, @"^[0-9]+$");
+            if (Key.Text.Contains("-"))
+                check1 = true;
+
             if (!check1)
             {
-                MessageBox.Show("Ключ не может содержать буквы!");
+                MessageBox.Show("Ключ содержит запрещенные символы!");
                 Key.Text = "";
             }
             else
             {
-                if (check)
+                if(!check)
+                {
+                    MessageBox.Show("Текст не соответсвтует выбранному языку или заданным параметрам!");
+                    Cipher.Text = "";
+                }
+                else
                 {
                     var dechipher = new List<string>();
                     dechipher = Dechipher();
@@ -57,7 +65,16 @@ namespace Infobez1
         private List<string> Dechipher()
         {
             var dechipher = new List<string>();
-            BigInteger key = BigInteger.Parse(Key.Text);
+            BigInteger key = 0;
+            try
+            {
+                key = BigInteger.Parse(Key.Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Ключ был обнулен, так как он содержит запрещенные символы!");
+                Key.Text = "";
+            }
             if (key < 0)
             {
                 key = key * (-1);
@@ -96,9 +113,15 @@ namespace Infobez1
         {
             bool check = Language_Check(Message.Text);
             bool check1 = Regex.IsMatch(Key.Text, @"^[0-9]+$");
+            //bool check2 = Regex.IsMatch(Key.Text, @"^[a-zA-zа-яА-я]+$"); 
+            if (Key.Text.Contains("-"))
+              check1 = true;
+            //if (check2)
+                //check1 = false;
+
             if (!check1)
             {
-                MessageBox.Show("Ключ не может содержать буквы!");
+                MessageBox.Show("Ключ содержит запрещенные символы!");
                 Key.Text = "";
             }
             else
@@ -106,10 +129,12 @@ namespace Infobez1
                 //почему открывается только один раз??????????????!!
                 if (check == false)
                 {
-                    ToolTip cm = this.FindResource("toolTrip") as ToolTip;
+                   /* ToolTip cm = this.FindResource("toolTrip") as ToolTip;
                     cm.PlacementTarget = Message;
                     cm.IsOpen = true;
-                    cm.StaysOpen = false;
+                    cm.StaysOpen = false; */
+                    MessageBox.Show("Текст не соответсвтует выбранному языку или заданным параметрам!");
+                    Message.Text = "";
                 }
                 if (check == true)
                 {
@@ -124,7 +149,16 @@ namespace Infobez1
         private List<string> Chipher()
         {
             var chipher = new List<string>();
-            BigInteger key = BigInteger.Parse(Key.Text);
+            BigInteger key = 0;
+            try
+            {
+                key = BigInteger.Parse(Key.Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Ключ был обнулен, так как он содержит запрещенные символы!");
+                Key.Text = "";
+            }
             if (key<0)
             {
                 key = key * (-1);
@@ -208,43 +242,16 @@ namespace Infobez1
                     if ((bt >= 97) && (bt <= 122)) angl_count++;
                     if ((bt >= 192) && (bt <= 239)) rus_count++;
                 }
-
-                if (angl_count > rus_count && IsEN == true) return true;
-                else if (angl_count < rus_count && IsRU == true) return true;
+                if (str.Contains("ё"))
+                    rus_count++;
+                if (angl_count > 0 && rus_count > 0) return false;
+                else if (angl_count > 0 && IsEN == true) return true;
+                else if (rus_count > 0 && IsRU == true) return true;
                 else return false;
                 // if (angl_count < rus_count) return Language.Russian;
                 //return Language.Unknown;
             }
         }
-
-        /* private bool Key_Check(string str)
-         {
-             Regex.IsMatch(str, @"^[a-zA-Z0-9]+$");
-             /* if (String.IsNullOrEmpty(str))
-              {
-                  MessageBox.Show("Empty key!!");
-                  return false;
-              }
-              else
-              {
-                  str.ToLower();
-
-                  byte[] b = System.Text.Encoding.Default.GetBytes(str);
-                  int letters_count = 0;
-
-                  foreach (byte bt in b)
-                  {
-                      if ((bt >= 97) && (bt <= 122)) letters_count++;
-                      if ((bt >= 192) && (bt <= 239)) letters_count++;
-                  }
-
-                  if (letters_count > 0) return true;
-
-                  else return false;
-                  // if (angl_count < rus_count) return Language.Russian;
-                  //return Language.Unknown;
-              } }*/
-
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
@@ -258,7 +265,7 @@ namespace Infobez1
         {
             BigInteger k;
             if (key == 0)
-                MessageBox.Show("Ключ не может быть равен 0!");
+                MessageBox.Show("Помни, что ключ не может быть равен 0!");
             else
             {
                 if (IsEN)
